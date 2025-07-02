@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>お客様の声</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f8f8f8;
+      padding: 20px;
+    }
+    .review {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 1em;
+      margin-bottom: 1em;
+      max-width: 600px;
+    }
+    .name {
+      font-weight: bold;
+      margin-bottom: 0.3em;
+    }
+    .stars {
+      color: #FFD700;
+      font-size: 1.1em;
+      margin-bottom: 0.5em;
+    }
+    .comment {
+      color: #333;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <h2>お客様の声</h2>
+  <div id="reviews">読み込み中...</div>
+
+  <script>
+    // ← ここをあなたのApps ScriptのURLに変更！
+    const API_URL = "https://script.google.com/macros/s/AKfycbxpjgKKg99azqZAkB9qelsSJ7Dz_dv7oqnEVBsY2ke1ANazd2HOlS-_n7gECIPmtbVc/exec";
+
+    fetch(API_URL)
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById("reviews");
+        container.innerHTML = "";
+
+        data.reverse().forEach(r => {
+          const div = document.createElement("div");
+          div.className = "review";
+          div.innerHTML = `
+            <div class="name">${r.name}</div>
+            <div class="stars">${'★'.repeat(Number(r.rating))}</div>
+            <div class="comment">${r.comment}</div>
+          `;
+          container.appendChild(div);
+        });
+      })
+      .catch(err => {
+        document.getElementById("reviews").innerText = "口コミの読み込みに失敗しました。";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
