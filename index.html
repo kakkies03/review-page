@@ -1,79 +1,34 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <title>お客様の声</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Kosugi Maru', sans-serif;
-      background: #fff8f8;
-      padding: 20px;
-    }
-    h2 {
-      color: #d86b9b;
-    }
-    .review {
-      background: #fff0f5;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 1em 1.2em;
-      margin-bottom: 1.5em;
-      position: relative;
-      max-width: 600px;
-    }
-    .review::after {
-      content: "";
-      position: absolute;
-      bottom: -10px;
-      left: 30px;
-      border-width: 10px;
-      border-style: solid;
-      border-color: #fff0f5 transparent transparent transparent;
-    }
-    .name {
-      font-weight: bold;
-      font-size: 1.1em;
-      color: #d86b9b;
-    }
-    .stars {
-      color: #ffc107;
-      font-size: 1.2em;
-      margin: 0.4em 0;
-    }
-    .comment {
-      color: #444;
-      line-height: 1.6;
-    }
+    body { font-family: sans-serif; }
+    .review { margin-bottom: 1em; padding: 1em; background: #f0f0f0; border-radius: 10px; }
+    .stars { color: gold; font-size: 1.2em; }
   </style>
 </head>
 <body>
-  <h2>?? お客様の声 ??</h2>
+  <h2>お客様の声</h2>
   <div id="reviews">読み込み中...</div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxpjgKKg99azqZAkB9qelsSJ7Dz_dv7oqnEVBsY2ke1ANazd2HOlS-_n7gECIPmtbVc/exec"; // ← 自分のURLに変更！
-
-    fetch(API_URL)
-      .then(response => response.json())
+    fetch('https://script.google.com/macros/s/AKfycbxpjgKKg99azqZAkB9qelsSJ7Dz_dv7oqnEVBsY2ke1ANazd2HOlS-_n7gECIPmtbVc/exec')  // ← あなたのApps Script URLに置き換え
+      .then(res => res.json())
       .then(data => {
-        const container = document.getElementById("reviews");
-        container.innerHTML = "";
-
-        data.reverse().forEach(r => {
-          const div = document.createElement("div");
-          div.className = "review";
+        const container = document.getElementById('reviews');
+        container.innerHTML = '';
+        data.forEach(r => {
+          const div = document.createElement('div');
+          div.className = 'review';
           div.innerHTML = `
-            <div class="name">${r.name}</div>
+            <strong>${r.name}</strong><br>
             <div class="stars">${'★'.repeat(Number(r.rating))}</div>
-            <div class="comment">${r.comment}</div>
+            <p>${r.comment}</p>
           `;
           container.appendChild(div);
         });
-      })
-      .catch(err => {
-        document.getElementById("reviews").innerText = "口コミの読み込みに失敗しました。";
-        console.error(err);
       });
   </script>
 </body>
