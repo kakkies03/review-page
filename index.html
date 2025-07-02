@@ -1,35 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <title>お客様の声</title>
+  <meta charset="UTF-8">
+  <title>商品別レビュー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; }
-    .review { margin-bottom: 1em; padding: 1em; background: #f0f0f0; border-radius: 10px; }
-    .stars { color: gold; font-size: 1.2em; }
+    body {
+      font-family: 'Kosugi Maru', sans-serif;
+      background: #fffafc;
+      padding: 20px;
+    }
+    h2 {
+      color: #d86b9b;
+    }
+    .buttons {
+      margin-bottom: 1.5em;
+      flex-wrap: wrap;
+    }
+    .buttons button {
+      background: #ffddee;
+      border: none;
+      padding: 0.5em 1em;
+      margin: 0.3em;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .buttons button.active {
+      background: #ff99cc;
+      color: white;
+    }
+    .review {
+      background: #fff0f5;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 1em 1.2em;
+      margin-bottom: 1.5em;
+      max-width: 600px;
+    }
+    .stars {
+      color: #ffc107;
+      font-size: 1.2em;
+      margin: 0.4em 0;
+    }
+    .name {
+      font-weight: bold;
+      color: #d86b9b;
+    }
   </style>
 </head>
 <body>
-  <h2>お客様の声</h2>
+  <h2>?? 商品レビュー一覧</h2>
+  <div class="buttons">
+    <button class="active" onclick="filterReviews('すべて')">すべて</button>
+    <button onclick="filterReviews('メンズ水着')">メンズ水着</button>
+    <button onclick="filterReviews('ウィメンズワンピース水着')">ウィメンズワンピース水着</button>
+    <button onclick="filterReviews('ウィメンズオールインワン水着')">ウィメンズオールインワン水着</button>
+    <button onclick="filterReviews('プルーフバッグ')">プルーフバッグ</button>
+    <button onclick="filterReviews('Tシャツ')">Tシャツ</button>
+    <button onclick="filterReviews('セームタオル')">セームタオル</button>
+    <button onclick="filterReviews('メッシュキャップ')">メッシュキャップ</button>
+  </div>
+
   <div id="reviews">読み込み中...</div>
 
   <script>
-    fetch('https://script.google.com/macros/s/AKfycbxpjgKKg99azqZAkB9qelsSJ7Dz_dv7oqnEVBsY2ke1ANazd2HOlS-_n7gECIPmtbVc/exec')  // ← あなたのApps Script URLに置き換え
+    const API_URL = "https://script.google.com/macros/s/AKfycbxpjgKKg99azqZAkB9qelsSJ7Dz_dv7oqnEVBsY2ke1ANazd2HOlS-_n7gECIPmtbVc/exec"; // ← ここをあなたのApps ScriptのURLに変更！
+
+    let allData = [];
+
+    fetch(API_URL)
       .then(res => res.json())
       .then(data => {
-        const container = document.getElementById('reviews');
-        container.innerHTML = '';
-        data.forEach(r => {
-          const div = document.createElement('div');
-          div.className = 'review';
-          div.innerHTML = `
-            <strong>${r.name}</strong><br>
-            <div class="stars">${'★'.repeat(Number(r.rating))}</div>
-            <p>${r.comment}</p>
-          `;
-          container.appendChild(div);
-        });
+        allData = data.reverse();
+        filterReviews('すべて'); // 最初は全部表示
       });
+
+    function filterReviews(productName) {
+      const container = document.getElementById("reviews");
+      container.innerHTML = "";
+
+      document.querySelectorAll('.buttons button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const activeBtn = Array.from(document.querySelectorAll('.buttons button')).find(b => b.textContent === productName);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const filtered = productName === 'すべて'
+        ? allData
+        : allData.filter(r => r.product === productName);
+
+      if (filtered.length === 0) {
+        container.innerHTML = "まだレビューがありません。";
+        return;
+      }
+
+      filtered.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "review";
+        div.innerHTML = `
+          <div class="name">${r.name}（${r.product}）</div>
+          <div class="stars">${'★'.repeat(Number(r.rating))}</div>
+          <div class="comment">${r.comment}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
   </script>
 </body>
 </html>
